@@ -13,6 +13,7 @@ Block::Block()
 void Block::changeText()
 {
 	this->setText(QString::number(isBomb) + QString::number(text));
+
 }
 ;
 
