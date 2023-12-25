@@ -7,13 +7,17 @@ pass::pass(QWidget *parent)
 
 	this->setFixedSize(24 * 35, 24 * 21);
 
-	
+	backBtn = new MyPushButton("返回");
+	backBtn->setParent(this);
+	backBtn->move(this->width() - backBtn->width() - 5, this->height() - backBtn->height() - 5);
+	backBtn->show();
+
+	connect(backBtn, &QPushButton::clicked, this, &pass::backWidget);
 
 }
 
 void pass::turnOver(QPair<bool, QPair<int, int>>p)
 {
-
 	int m = blocks.size();
 	int n = blocks[0].size();
 
@@ -22,10 +26,22 @@ void pass::turnOver(QPair<bool, QPair<int, int>>p)
 
 	Block* block = blocks[x][y];
 
+	if (block->text != 0)
+	{
+		block->isShow = true;
+		bool ret = block->changeText();
+		s.insert(block);
+		block->canPress = false;
+		if (s.size() == surplus)
+		{
+			youVectory();
+			return;
+		}
+		return;
+	}
+
 	QQueue<Block*> q;
 	q.enqueue(block);
-
-	QSet<Block*>s;
 
 	while (!q.empty())
 	{
@@ -33,7 +49,14 @@ void pass::turnOver(QPair<bool, QPair<int, int>>p)
 		cur->isShow = true;
 		x = cur->posy;
 		y = cur->posx;
-		cur->changeText();
+		bool ret = cur->changeText();
+		s.insert(cur);
+		cur->canPress = false;
+		if (s.size() == surplus)
+		{
+			youVectory();
+			return;
+		}
 		for (int i = 0; i < 8;i++)
 		{
 			int nextx = x + next[i][0];
@@ -46,19 +69,23 @@ void pass::turnOver(QPair<bool, QPair<int, int>>p)
 					if (nextblock->text != 0)
 					{
 						nextblock->isShow = true;
-						nextblock->changeText();
+						bool ret = nextblock->changeText();
+						s.insert(nextblock);
+						nextblock->canPress = false;
 					}
 					else
 					{
 						q.enqueue(nextblock);
-						s.insert(nextblock);
+					}
+					if (s.size() == surplus)
+					{
+						youVectory();
+						return;
 					}
 				}
 			}
 		}
 	}
-
-
 }
 
 
@@ -75,6 +102,7 @@ void pass::plantBomb()
 	case 1:
 		bombNum = 10;
 		blocks.resize(9);
+		surplus = 9 * 9 - 10;
 		for (int i = 0; i < 9 * 9; i++)
 		{
 			Block* block = new Block();
@@ -83,23 +111,27 @@ void pass::plantBomb()
 			block->posx = i % 9;
 			block->posy = i / 9;
 		}
-		while (bombNum)
+		for (int i = 0; i < bombNum; i++)
 		{
-			for (int i = 0; i < 9 && bombNum > 0; i++)
+			int randNum = QRandomGenerator::global()->bounded(10000);
+			int modNum = randNum % (9 * 9);
+			bool flag = false;
+			while (!flag)
 			{
-				for (int j = 0; j < 9 && bombNum > 0; j++)
+				if (!blocks[modNum / 9][modNum % 9]->isBomb)
 				{
-					if (!blocks[i][j]->isBomb)
-					{
-						if (QRandomGenerator::global()->bounded(20) == 1)
-						{
-							blocks[i][j]->isBomb = 1;
-							bombNum--;
-						}
-					}
+					blocks[modNum / 9][modNum % 9]->isBomb = 1;
+					flag = true;
+				}
+				else
+				{
+					modNum = modNum + 1 >= 9 * 9 ? 0 : modNum + 1;
 				}
 			}
+
 		}
+
+		//bombNum = 10;
 		for (int i = 0; i < 9; i++)
 		{
 			for (int j = 0; j < 9; j++)
@@ -117,6 +149,7 @@ void pass::plantBomb()
 		break;
 	case 2:
 		bombNum = 40;
+		surplus = 16 * 16 - 40;
 		blocks.resize(16);
 		for (int i = 0; i < 16 * 16; i++)
 		{
@@ -126,22 +159,24 @@ void pass::plantBomb()
 			block->posx = i % 16;
 			block->posy = i / 16;
 		}
-		while (bombNum)
+		for (int i = 0; i < bombNum; i++)
 		{
-			for (int i = 0; i < 16 && bombNum > 0; i++)
+			int randNum = QRandomGenerator::global()->bounded(10000);
+			int modNum = randNum % (16 * 16);
+			bool flag = false;
+			while (!flag)
 			{
-				for (int j = 0; j < 16 && bombNum > 0; j++)
+				if (!blocks[modNum / 16][modNum % 16]->isBomb)
 				{
-					if (!blocks[i][j]->isBomb)
-					{
-						if (QRandomGenerator::global()->bounded(20) == 1)
-						{
-							blocks[i][j]->isBomb = 1;
-							bombNum--;
-						}
-					}
+					blocks[modNum / 16][modNum % 16]->isBomb = 1;
+					flag = true;
+				}
+				else
+				{
+					modNum = modNum + 1 >= 16 * 16 ? 0 : modNum + 1;
 				}
 			}
+
 		}
 		for (int i = 0; i < 16; i++)
 		{
@@ -160,6 +195,7 @@ void pass::plantBomb()
 		break;
 	case 3:
 		bombNum = 99;
+		surplus = 16 * 30 - 99;
 		blocks.resize(16);
 		for (int i = 0; i < 16 * 30; i++)
 		{
@@ -170,22 +206,24 @@ void pass::plantBomb()
 			block->posy = i / 30;
 		}
 
-		while (bombNum)
+		for (int i = 0; i < bombNum; i++)
 		{
-			for (int i = 0; i < 16 && bombNum > 0; i++)
+			int randNum = QRandomGenerator::global()->bounded(10000);
+			int modNum = randNum % (16 * 30);
+			bool flag = false;
+			while (!flag)
 			{
-				for (int j = 0; j < 30 && bombNum > 0; j++)
+				if (!blocks[modNum / 30][modNum % 30]->isBomb)
 				{
-					if (!blocks[i][j]->isBomb)
-					{
-						if (QRandomGenerator::global()->bounded(20) == 1)
-						{
-							blocks[i][j]->isBomb = 1;
-							bombNum--;
-						}
-					}
+					blocks[modNum / 30][modNum % 30]->isBomb = 1;
+					flag = true;
+				}
+				else
+				{
+					modNum = modNum + 1 >= 16 * 30 ? 0 : modNum + 1;
 				}
 			}
+
 		}
 
 		for (int i = 0; i < 16; i++)
@@ -208,7 +246,8 @@ void pass::plantBomb()
 	}
 
 	connectFunction();
-
+	timeBegin();
+	showBombNum(0);
 }
 
 void pass::connectFunction()
@@ -220,6 +259,43 @@ void pass::connectFunction()
 		for (int j = 0; j < n; j++)
 		{
 			connect(blocks[i][j], &Block::sentPress, this, &pass::turnOver);
+			connect(blocks[i][j], &Block::sendBombNum, this, &pass::showBombNum);
+			connect(blocks[i][j], &Block::sentExplode, this, &pass::gameOver);
 		}
 	}
+}
+
+void pass::youVectory()
+{
+	qDebug() << "success";
+}
+
+void pass::backWidget()
+{
+
+	this->hide();
+	init();
+	surplus = 0;
+	s.clear();
+	emit sentShow(true);
+
+}
+
+void pass::gameOver()
+{
+	qDebug() << "gameover";
+
+	int m = blocks.size();
+	int n = blocks[0].size();
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			if (!blocks[i][j]->isShow)
+			{
+				blocks[i][j]->changeText();
+			}
+		}
+	}
+
 }

@@ -4,8 +4,9 @@
 #include "ui_Minesweeper.h"
 #include "MyPushButton.h"
 #include "selectPass.h"
+#include "MyWidget.h"
 
-class Minesweeper : public QWidget
+class Minesweeper : public MyWidget
 {
     Q_OBJECT
 

@@ -10,7 +10,7 @@ Block::Block()
 	// 使用样式表设置背景颜色为纯黑色
     this->setStyleSheet("background-color: rgb(45, 62, 74); color: white; border: 0.5px solid black;");
 }
-void Block::changeText()
+bool Block::changeText()
 {
 	if (canPress)
 	{
@@ -23,8 +23,9 @@ void Block::changeText()
 			this->setText(QString::number(text));
 		}
 		this->setStyleSheet("background-color: white; color: black; border: 0.5px solid black;");
+		return true;
 	}
-
+	return false;
 }
 
 void Block::mousePressEvent(QMouseEvent* e)
@@ -39,28 +40,24 @@ void Block::mousePressEvent(QMouseEvent* e)
 			explode(); break;
 		case 0:
 		{
-			if(this->text == 0)
-				sentPress({ true,{posx,posy} });
-			if (this->text != 0)
-			{
-				isShow = true;
-				changeText();
-			}
-			break;
+			sentPress({ true,{posx,posy} });
 		}
 		default:
 			break;
 		}	
+		emit sentClicked(true);
 	}
 	if (e->button() == Qt::RightButton)
 	{
+		if (this->isShow)
+			return;
 		turn();
 	}
 }
 
 void Block::explode()
 {
-	
+	emit sentExplode(true);
 }
 
 void Block::turn()
@@ -69,11 +66,13 @@ void Block::turn()
 	{
 		this->canPress = false;
 		this->setStyleSheet("background-color: rgb(149, 220, 237); color: white; border: 0.5px solid black;");
+		emit sendBombNum(-1);
 	}
 	else
 	{
 		this->canPress = true;
 		this->setStyleSheet("background-color: rgb(45, 62, 74); color: white; border: 0.5px solid black;");
+		emit sendBombNum(1);
 	}
 }
 

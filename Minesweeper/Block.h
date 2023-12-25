@@ -10,7 +10,7 @@ class Block  : public MyPushButton
 public:
 	Block(QObject *parent);
 	Block();
-	void changeText();
+	bool changeText();
 	void mousePressEvent(QMouseEvent* e);
 	void explode();
 	void turn();
@@ -25,4 +25,7 @@ public:
 
 signals:
 	void sentPress(QPair<bool,QPair<int,int>>);
+	void sendBombNum(int num);
+	void sentExplode(bool flag);
+	void sentClicked(bool flag);
 };

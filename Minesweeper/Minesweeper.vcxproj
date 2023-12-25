@@ -92,15 +92,21 @@
     <ClCompile Include="basePass.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="MyPushButton.cpp" />
+    <ClCompile Include="MyTimer.cpp" />
+    <ClCompile Include="MyWidget.cpp" />
     <ClCompile Include="pass.cpp" />
+    <ClCompile Include="PassPlus.cpp" />
     <ClCompile Include="selectPass.cpp" />
+    <ClCompile Include="TimeWorker.cpp" />
     <QtRcc Include="Minesweeper.qrc" />
     <QtUic Include="basePass.ui" />
     <QtUic Include="Minesweeper.ui" />
     <QtMoc Include="Minesweeper.h" />
     <ClCompile Include="Minesweeper.cpp" />
     <ClCompile Include="main.cpp" />
+    <QtUic Include="MyWidget.ui" />
     <QtUic Include="pass.ui" />
+    <QtUic Include="PassPlus.ui" />
     <QtUic Include="selectPass.ui" />
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +123,18 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Block.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="MyWidget.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="MyTimer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="TimeWorker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="PassPlus.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

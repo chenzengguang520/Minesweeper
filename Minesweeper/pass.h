@@ -17,10 +17,18 @@ public:
 	~pass();
 	void plantBomb();
 	void connectFunction();
+	void youVectory();
+	void backWidget();
+	void gameOver();
 public:
 	int level;
+	int surplus;
 private:
 	Ui::passClass ui;
-
+	MyPushButton* backBtn;
 	QVector<QVector<int>>next = { {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1} };
+
+
+signals:
+	void sentShow(bool flag);
 };
