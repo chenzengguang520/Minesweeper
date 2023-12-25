@@ -4,6 +4,8 @@
 #include "basePass.h"
 #include "QDebug"
 #include <QRandomGenerator>
+#include <QQueue>
+#include <QSet>
 
 class pass : public basePass
 {
@@ -11,10 +13,14 @@ class pass : public basePass
 
 public:
 	pass(QWidget *parent = nullptr);
+	void turnOver(QPair<bool,QPair<int,int>>);
 	~pass();
 	void plantBomb();
+	void connectFunction();
 public:
 	int level;
 private:
 	Ui::passClass ui;
+
+	QVector<QVector<int>>next = { {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1} };
 };

@@ -6,6 +6,59 @@ pass::pass(QWidget *parent)
 	ui.setupUi(this);
 
 	this->setFixedSize(24 * 35, 24 * 21);
+
+	
+
+}
+
+void pass::turnOver(QPair<bool, QPair<int, int>>p)
+{
+
+	int m = blocks.size();
+	int n = blocks[0].size();
+
+	int y = p.second.first;
+	int x = p.second.second;
+
+	Block* block = blocks[x][y];
+
+	QQueue<Block*> q;
+	q.enqueue(block);
+
+	QSet<Block*>s;
+
+	while (!q.empty())
+	{
+		Block* cur = q.dequeue();
+		cur->isShow = true;
+		x = cur->posy;
+		y = cur->posx;
+		cur->changeText();
+		for (int i = 0; i < 8;i++)
+		{
+			int nextx = x + next[i][0];
+			int nexty = y + next[i][1];
+			if (nextx >= 0 && nextx < m && nexty >= 0 && nexty < n)
+			{
+				Block* nextblock = blocks[nextx][nexty];
+				if (nextblock->canPress && s.find(nextblock) == s.end() && !nextblock->isBomb)
+				{
+					if (nextblock->text != 0)
+					{
+						nextblock->isShow = true;
+						nextblock->changeText();
+					}
+					else
+					{
+						q.enqueue(nextblock);
+						s.insert(nextblock);
+					}
+				}
+			}
+		}
+	}
+
+
 }
 
 
@@ -27,6 +80,8 @@ void pass::plantBomb()
 			Block* block = new Block();
 			blocks[i / 9].resize(9);
 			blocks[i / 9][i % 9] = block;
+			block->posx = i % 9;
+			block->posy = i / 9;
 		}
 		while (bombNum)
 		{
@@ -68,6 +123,8 @@ void pass::plantBomb()
 			Block* block = new Block();
 			blocks[i / 16].resize(16);
 			blocks[i / 16][i % 16] = block;
+			block->posx = i % 16;
+			block->posy = i / 16;
 		}
 		while (bombNum)
 		{
@@ -109,6 +166,8 @@ void pass::plantBomb()
 			Block* block = new Block();
 			blocks[i / 30].resize(30);
 			blocks[i / 30][i % 30] = block;
+			block->posx = i % 30;
+			block->posy = i / 30;
 		}
 
 		while (bombNum)
@@ -148,6 +207,19 @@ void pass::plantBomb()
 		break;
 	}
 
+	connectFunction();
 
+}
 
+void pass::connectFunction()
+{
+	int m = blocks.size();
+	int n = blocks[0].size();
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			connect(blocks[i][j], &Block::sentPress, this, &pass::turnOver);
+		}
+	}
 }

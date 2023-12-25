@@ -11,8 +11,18 @@ public:
 	Block(QObject *parent);
 	Block();
 	void changeText();
+	void mousePressEvent(QMouseEvent* e);
+	void explode();
+	void turn();
 	~Block();
 public:
 	int isBomb = 0;
 	int text;
+	int posx;
+	int posy;
+	bool canPress = true;
+	bool isShow = false;
+
+signals:
+	void sentPress(QPair<bool,QPair<int,int>>);
 };
