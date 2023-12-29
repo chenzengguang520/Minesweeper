@@ -14,15 +14,39 @@ pass::pass(QWidget *parent)
 
 	connect(backBtn, &QPushButton::clicked, this, &pass::backWidget);
 
+
+
+	bombNumberLabel = QSharedPointer<QLabel>::create();
+
+	bombNumberLabel->setParent(this);
+
+	MyPushButton* connectBtn = new MyPushButton("连接服务器");
+	connectBtn->setParent(this);
+	connectBtn->move(0, this->height() * 0.5 - connectBtn->height());
+	connectBtn->show();
+	client = new Client();
+	connect(connectBtn, &QPushButton::clicked, this, &basePass::startConnect);
+
+// 	MyPushButton* sentBtn = new MyPushButton("发生");
+// 	sentBtn->setParent(this);
+// 	sentBtn->move(0, this->height() * 0.5 - sentBtn->height() - sentBtn->height() - 5);
+// 	sentBtn->show();
+	connect(this, &pass::sentState, client, &Client::beginSentFile);
+
+	connect(client, &Client::updata, this, &pass::updateChange);
+
+
 }
 
 void pass::turnOver(QPair<bool, QPair<int, int>>p)
 {
+
 	int m = blocks.size();
 	int n = blocks[0].size();
 
 	int y = p.second.first;
 	int x = p.second.second;
+	
 
 	Block* block = blocks[x][y];
 
@@ -30,13 +54,16 @@ void pass::turnOver(QPair<bool, QPair<int, int>>p)
 	{
 		block->isShow = true;
 		bool ret = block->changeText();
+		bombState[x][y] = 1;
 		s.insert(block);
 		block->canPress = false;
 		if (s.size() == surplus)
 		{
 			youVectory();
+			sentStateData();
 			return;
 		}
+		sentStateData();
 		return;
 	}
 
@@ -52,9 +79,11 @@ void pass::turnOver(QPair<bool, QPair<int, int>>p)
 		bool ret = cur->changeText();
 		s.insert(cur);
 		cur->canPress = false;
+		bombState[x][y] = 1;
 		if (s.size() == surplus)
 		{
 			youVectory();
+			sentStateData();
 			return;
 		}
 		for (int i = 0; i < 8;i++)
@@ -72,6 +101,7 @@ void pass::turnOver(QPair<bool, QPair<int, int>>p)
 						bool ret = nextblock->changeText();
 						s.insert(nextblock);
 						nextblock->canPress = false;
+						bombState[nextx][nexty] = 1;
 					}
 					else
 					{
@@ -80,12 +110,14 @@ void pass::turnOver(QPair<bool, QPair<int, int>>p)
 					if (s.size() == surplus)
 					{
 						youVectory();
+						sentStateData();
 						return;
 					}
 				}
 			}
 		}
 	}
+	sentStateData();
 }
 
 
@@ -94,12 +126,15 @@ pass::~pass()
 
 void pass::plantBomb()
 {
+// 	quint64 seed = 42;
+// 	QRandomGenerator::global()->seed(seed);
 	//level = 1 10,level = 2 40,level = 3 99
 
 	level = getLevel();
 	switch (level)
 	{
 	case 1:
+		initBombVector(9, 9);
 		bombNum = 10;
 		blocks.resize(9);
 		surplus = 9 * 9 - 10;
@@ -113,7 +148,9 @@ void pass::plantBomb()
 		}
 		for (int i = 0; i < bombNum; i++)
 		{
-			int randNum = QRandomGenerator::global()->bounded(10000);
+			QRandomGenerator prng1(1234);
+			int randNum = prng1.generate() % 10001;
+			//int randNum = QRandomGenerator::global()->bounded(10000);
 			int modNum = randNum % (9 * 9);
 			bool flag = false;
 			while (!flag)
@@ -148,6 +185,7 @@ void pass::plantBomb()
 		}
 		break;
 	case 2:
+		initBombVector(16, 16);
 		bombNum = 40;
 		surplus = 16 * 16 - 40;
 		blocks.resize(16);
@@ -194,6 +232,7 @@ void pass::plantBomb()
 		}
 		break;
 	case 3:
+		initBombVector(16, 30);
 		bombNum = 99;
 		surplus = 16 * 30 - 99;
 		blocks.resize(16);
@@ -297,5 +336,59 @@ void pass::gameOver()
 			}
 		}
 	}
+
+}
+
+void pass::revordBombState(int x,int y)
+{
+	bombState[x][y] = 1;
+}
+
+void pass::initBombVector(int m, int n)
+{
+
+	bombState.resize(m);
+	for (int i = 0; i < m; i++)
+	{
+		bombState[i].resize(n);
+	}
+
+}
+
+void pass::updateChange()
+{
+	transfromStringToVector();
+	int m = bombState.size();
+	int n = bombState[0].size();
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			if (bombState[i][j] == 1)
+			{
+				Block* block = blocks[i][j];
+				block->isShow = true;
+				bool ret = block->changeText();
+				s.insert(block);
+				block->canPress = false;
+				if (s.size() == surplus)
+				{
+					youVectory();
+					return;
+				}
+				if (block->isBomb)
+				{
+					block->explode();
+				}
+			}
+		}
+	}
+}
+
+void pass::sentStateData()
+{
+
+	client->sentData = transformToString();
+	emit sentState();
 
 }

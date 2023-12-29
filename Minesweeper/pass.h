@@ -20,6 +20,11 @@ public:
 	void youVectory();
 	void backWidget();
 	void gameOver();
+	void revordBombState(int x,int y);
+	void initBombVector(int m,int n);
+	void updateChange();
+	void sentStateData();
+
 public:
 	int level;
 	int surplus;
@@ -28,7 +33,7 @@ private:
 	MyPushButton* backBtn;
 	QVector<QVector<int>>next = { {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1} };
 
-
 signals:
 	void sentShow(bool flag);
+	void sentState();
 };

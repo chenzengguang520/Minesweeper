@@ -24,8 +24,10 @@ public:
 	bool isShow = false;
 
 signals:
+
 	void sentPress(QPair<bool,QPair<int,int>>);
 	void sendBombNum(int num);
 	void sentExplode(bool flag);
 	void sentClicked(bool flag);
+
 };

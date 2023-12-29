@@ -67,6 +67,12 @@
     <ClCompile Include="PassPlus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SenterAndRecord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MyPushButton.h">
@@ -94,6 +100,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="PassPlus.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Client.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SenterAndRecord.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

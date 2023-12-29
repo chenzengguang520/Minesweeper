@@ -5,9 +5,7 @@ basePass::basePass(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	bombNumberLabel = QSharedPointer<QLabel>::create();
-
-	bombNumberLabel->setParent(this);
+	
 
 }
 
@@ -54,11 +52,14 @@ void basePass::init()
 		}
 	}
 
+
 	for (int i = 0; i < m; i++)
 	{
 		blocks[i].clear();
+		bombState[i].clear();
 	}
 	blocks.clear();
+	bombState.clear();
 }
 
 void basePass::timeBegin()
@@ -133,6 +134,24 @@ int basePass::checkBomb(int x, int y, int m, int n)
 
 }
 
+QVector<int> basePass::splitString(QString str)
+{
+	QVector<int>v;
+	int sz = str.size();
+	int l = 0;
+	while (l < sz)
+	{
+		if (str[l] != '\u0000')
+		{
+			qDebug() << "str[l] = " << str[l].unicode();
+			v.push_back(str[l].unicode() - '0');
+		}
+		else break;
+		l++;
+	}
+	return v;
+}
+
 void basePass::showBombNum(int num)
 {
 	bombNum += num;
@@ -141,4 +160,74 @@ void basePass::showBombNum(int num)
 	bombNumberLabel->move(this->width() - bombNumberLabel->width(), 0);
 	bombNumberLabel->show();
 	return;
+}
+
+void basePass::startConnect()
+{
+	unsigned short port = 10000;
+	QString ip = "43.143.238.28";
+	client->sentData = transformToString();
+	client->beginConnect(port,ip);
+}
+
+QString basePass::transformToString()
+{
+	QString str = QString::number(level);
+	int m = bombState.size();
+	int n = bombState[0].size();
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			str += QString::number(bombState[i][j]);
+		}
+	}
+	qDebug() << "str = " << str;
+	return str;
+}
+
+void basePass::transfromStringToVector()
+{
+	QString str = client->recvData;
+	qDebug() << "str = " << str;
+	QVector<int>v = splitString(str);
+	qDebug() << "str[0] = " << str[0];
+	int sz = v.size();
+	switch (v[0])
+	{
+	case 1:
+		qDebug() << "case1";
+		// 9 * 9
+		for (int i = 0; i < 9; i++)
+		{
+			for (int j = 0; j < 9; j++)
+			{
+				bombState[i][j] = v[i * 9 + j + 1];
+			}
+		}
+		break;
+	case 2:
+		qDebug() << "case2";
+		for (int i = 0; i < 16; i++)
+		{
+			for (int j = 0; j < 16; j++)
+			{
+				bombState[i][j] = v[i * 16 + j + 1];
+			}
+		}
+		break;
+	case 3:
+		qDebug() << "case3";
+		for (int i = 0; i < 16; i++)
+		{
+			for (int j = 0; j < 30; j++)
+			{
+				bombState[i][j] = v[i * 30 + j + 1];
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	qDebug() << transformToString();
 }

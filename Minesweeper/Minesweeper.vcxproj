@@ -38,12 +38,12 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>6.4.1_msvc2019_64</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;network;widgets</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>6.4.1_msvc2019_64</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;network;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -91,12 +91,14 @@
   <ItemGroup>
     <ClCompile Include="basePass.cpp" />
     <ClCompile Include="Block.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="MyPushButton.cpp" />
     <ClCompile Include="MyTimer.cpp" />
     <ClCompile Include="MyWidget.cpp" />
     <ClCompile Include="pass.cpp" />
     <ClCompile Include="PassPlus.cpp" />
     <ClCompile Include="selectPass.cpp" />
+    <ClCompile Include="SenterAndRecord.cpp" />
     <ClCompile Include="TimeWorker.cpp" />
     <QtRcc Include="Minesweeper.qrc" />
     <QtUic Include="basePass.ui" />
@@ -135,6 +137,12 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="PassPlus.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="Client.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="SenterAndRecord.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
